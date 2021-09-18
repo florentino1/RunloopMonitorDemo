@@ -32,6 +32,7 @@
 }
 
 - (void) startMonitor{
+    _backtrace=[[NSMutableArray alloc]init];
     [self registerObserver];
 }
 
@@ -45,7 +46,16 @@
 }
 
 - (void) printLogTrace{
-    NSLog(@"====================堆栈\n %@ \n",_backtrace);
+    if(_backtrace==NULL)
+        NSLog(@"======未检出卡顿========\n");
+    else
+    {
+        NSLog(@"======堆栈======= \n");
+        for(NSMutableArray *temp in _backtrace)
+        {
+            NSLog(@"%@",temp);
+        }
+    }
 }
 
 static void runLoopObserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info)
@@ -84,7 +94,7 @@ static void runLoopObserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActi
                     if (++_countTime < 5)
                         continue;
                     [self logStack];
-                    NSLog(@"something lag");
+                    NSLog(@"something log");
                 }
             }
             _countTime = 0;
@@ -97,10 +107,12 @@ static void runLoopObserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActi
     int frames = backtrace(callstack, 128);
     char **strs = backtrace_symbols(callstack, frames);
     int i;
-    _backtrace = [NSMutableArray arrayWithCapacity:frames];
+    NSMutableArray *backtrace = [SeMonitorController sharedInstance]->_backtrace;
+    NSMutableArray *temp=[NSMutableArray arrayWithCapacity:frames];
     for ( i = 0 ; i < frames ; i++ ){
-        [_backtrace addObject:[NSString stringWithUTF8String:strs[i]]];
+        [temp addObject:[NSString stringWithUTF8String:strs[i]]];
     }
+    [backtrace addObject:temp];
     free(strs);
 }
 

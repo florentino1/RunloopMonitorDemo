@@ -36,8 +36,9 @@
 
 - (void)runLongTime{
     for ( int i = 0 ; i < 10000 ; i ++ ){
-        NSLog(@"%d",i);
+       NSLog(@"%d",i);
     }
+    
 }
 
 - (void)printLog{
